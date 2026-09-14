@@ -1,0 +1,56 @@
+onboarding = false
+
+# Palette: Batman Beyond alley. Near-black plum ground, one neon-magenta accent,
+# crimson for attention, cool violet/cyan for notifications. Everything else stays neutral.
+[theme]
+name = "catppuccin"
+
+[theme.custom]
+panel_bg = "#15111a"
+sidebar_bg = "#120e16"
+active_row_bg = "#241a29"
+selection_bg = "#3b2238"
+surface0 = "#2a2130"
+surface1 = "#3b2f43"
+surface_dim = "#1c161f"
+overlay0 = "#7d6e86"
+overlay1 = "#97889c"
+text = "#ebe2ea"
+subtext0 = "#b6a8bb"
+accent = "#e3506e"
+mauve = "#c98bd9"
+red = "#ff5c6c"
+blue = "#8b9cf2"
+teal = "#5fd3e0"
+peach = "#ffa07a"
+yellow = "#f2c46d"
+green = "#7ed491"
+
+[ui]
+accent = "#e3506e"
+status_indicators = "symbols"
+
+# Spaces: name, then git line (branch, status, dirty/ahead counts),
+# then "3 tabs · 4 panes · 8 Sep".
+# $tabs/$panes/$since/$age/$git are reported by sidebar-meta.py (launchd: dev.herdr.sidebar-meta).
+[ui.sidebar.spaces]
+row_gap = 0
+rows = [
+  ["state_icon", "workspace"],
+  ["branch", "git_status", { token = "$git", fg = "#ffa07a" }],
+  [
+    { token = "$tabs", dim = true },
+    { token = "$panes", dim = true },
+    { token = "$since", dim = true },
+  ],
+]
+
+# Agents: "working ⟳ 14m · Title", then "Space · tab", then "agent · age".
+# $since/$age/$elapsed are reported by sidebar-meta.py (launchd: dev.herdr.sidebar-meta).
+[ui.sidebar.agents]
+row_gap = 0
+rows = [
+  ["state_icon", "state_text", { token = "$elapsed", fg = "#f2c46d" }, { token = "terminal_title_stripped", fg = "#e3506e", bold = true }],
+  [{ token = "workspace", bold = true }, { token = "tab", dim = true }],
+  ["agent", { token = "$age", dim = true }],
+]
