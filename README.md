@@ -16,6 +16,7 @@ ln -sf "$PWD/herdr/dev.herdr.sidebar-meta.plist" ~/Library/LaunchAgents/dev.herd
 mkdir -p ~/.agents/skills ~/.claude/skills
 ln -sfn "$PWD/skills/team" ~/.agents/skills/team
 ln -sfn "$PWD/skills/team" ~/.claude/skills/team
+ln -sfn ~/.claude/skills ~/.claude-b/skills   # second seat (claude2)
 ```
 
 Reload herdr after config changes: `herdr server reload-config`.
