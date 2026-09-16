@@ -53,7 +53,7 @@ Fetch inline comments, general comments and reviews (hosts.md). **Check the fetc
 
 Classify what comes back.
 
-A previous review by this skill (body contains `Reviewed by /review-pr`) makes this a re-review: take its timestamp, fetch commits since, diff that range to `$DIR/incremental.patch`, and make the incremental diff the primary target with the full diff still on disk for context.
+A previous review by this skill (body contains `posted on behalf of Zaakir` or the older `Reviewed by /review-pr`) makes this a re-review: take its timestamp, fetch commits since, diff that range to `$DIR/incremental.patch`, and make the incremental diff the primary target with the full diff still on disk for context.
 
 Comments by the PR author are a self-review checklist, not reviewer feedback. Authors often find things and then fix them in later commits. Map each self-finding to the commit that followed it, or mark it still open; if the commit list is unavailable, pass them through as open rather than guessing at a resolution. Brief the agents to check whether those fixes actually landed, what the author missed, and what they acknowledged but chose not to fix. An acknowledgement does not downgrade severity: "aware this swallows the error, leaving it" is a known critical, not a handled one. Otherwise an author silences any finding by conceding it first.
 
@@ -172,7 +172,7 @@ Critical N | Important N | Suggestions N | Unverified N | Already raised by othe
 {one paragraph, then the decision and what would change it}
 
 ---
-*Reviewed by /review-pr*
+*0x7465616D206C656164 🧙🏼‍♂️ posted on behalf of Zaakir*
 ```
 
 ## 11. Clean up and report
