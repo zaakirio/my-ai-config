@@ -6,7 +6,7 @@ Personal AI agent config. Source of truth; symlink into place on a new machine.
 - `herdr/`: `config.toml` (theme, sidebar layout), `sidebar-meta.py` + plist (custom sidebar tokens `$tabs/$panes/$git/$elapsed`).
 - `skills/team/`: lead/engineer/QA agents coordinating through herdr panes.
 - `skills/review-pr/`, `skills/fix-pr/`: PR review and review-response, fanning out to the reviewer agents below.
-- `agents/review-*.md`: the four reviewer personas the review skill spawns in parallel.
+- `agents/review-*.md`: the six reviewer personas the review skill spawns in parallel, including security and performance specialists gated on diff signals.
 - `review/`: shared references both skills read at the step that needs them, plus `post-review.py`.
 
 ## Install
@@ -30,7 +30,7 @@ Reload herdr after config changes: `herdr server reload-config`.
 
 ## PR review
 
-`/review-pr [PR | TICKET-KEY | URL]` fetches the PR and its diff to disk, checks the PR head out into a worktree, pulls acceptance criteria from Jira or Linear, runs the four reviewer agents in parallel, verifies what they report against the head tree, then posts inline comments and a verdict. It approves only when nothing critical or important survives verification; `--local` posts nothing and `--no-approve` caps the verdict at a comment.
+`/review-pr [PR | TICKET-KEY | URL]` fetches the PR and its diff to disk, checks the PR head out into a worktree, pulls acceptance criteria from Jira or Linear, runs the six reviewer agents in parallel, verifies what they report against the head tree, then posts inline comments and a verdict. It approves only when nothing critical or important survives verification; `--local` posts nothing and `--no-approve` caps the verdict at a comment.
 
 `/fix-pr [PR]` does the other direction: fetch the review comments, separate actionable from needs-a-human, apply the fixes, and reply to every finding as Fixed, Deferred, Investigated or Disputed. It edits the working tree and stops; `--commit`, `--push` and `--reply` are opt-in.
 

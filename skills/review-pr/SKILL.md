@@ -1,7 +1,7 @@
 ---
 name: review-pr
 description: Review a pull request. Detects GitHub or Bitbucket, pulls ticket context from Jira or Linear, fans reviewer agents out over the diff, verifies their findings against the PR head, then posts inline comments and a verdict. Use when asked to review a specific PR or when a PR link is shared for review. It posts to the PR, so run it only for a real review of a real PR, never as background analysis.
-argument-hint: "[PR | TICKET-KEY | URL] [--repo owner/repo] [--local] [--no-approve] [correctness|errors|tests|quality|all]"
+argument-hint: "[PR | TICKET-KEY | URL] [--repo owner/repo] [--local] [--no-approve] [correctness|errors|tests|quality|security|perf|all]"
 allowed-tools: ["Bash", "Read", "Grep", "Glob", "Agent"]
 ---
 
@@ -92,6 +92,8 @@ Gate agents with cheap greps over the target diff. Each skipped agent saves a sp
 ```bash
 SOURCE=$(grep '^diff --git' "$T" | grep -cvE '\.(md|txt|json|ya?ml|lock)$' || true)
 QUALITY=$(grep -cE '^\+\s*(//|/\*|\*|#)|^\+.*\b(interface|type|class|enum|struct)\b' "$T" || true)
+SECURITY=$(grep -cE '^\+.*\b(auth|login|token|secret|password|jwt|session|cookie|crypto|permission|sql|query|exec|eval|redirect|upload|deserial|pickle|cors|csrf|webhook)\b' "$T" || true)
+PERF=$(grep -cE '^\+.*\b(SELECT|INSERT|UPDATE|DELETE|JOIN|queries|cache|memo|paginat|batch|index|debounce|throttle|stream|queue|worker|pool|mutex|lock)\b' "$T" || true)
 ```
 
 | Aspect | Agent | Run when |
@@ -100,6 +102,8 @@ QUALITY=$(grep -cE '^\+\s*(//|/\*|\*|#)|^\+.*\b(interface|type|class|enum|struct
 | errors | `review-failure-modes` | always |
 | tests | `review-tests` | `SOURCE > 0` |
 | quality | `review-maintainability` | `QUALITY > 0` |
+| security | `review-security` | `SECURITY > 0` |
+| perf | `review-performance` | `PERF > 0` |
 
 Launch them in one message so they run concurrently. Each prompt carries: the context file path, the tree path or the explicit no-tree statement, the ticket provider and key if any, the reference directory as an absolute path (`REF=$(cd ~/.claude/review && pwd)`, since a subagent's Read will not expand `~`), and this instruction:
 
