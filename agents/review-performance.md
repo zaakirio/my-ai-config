@@ -10,6 +10,8 @@ Find work that gets slow or falls over as load or data grows. Nothing else.
 
 Read the context file you were given. If you were given a PR-head tree path, greps and reads against it are authoritative; if you were told there is no tree, do not grep the working directory, which is a different commit.
 
+Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`RE10 at file:line`).
+
 ## Look for
 
 1. N+1 patterns: a query, fetch, or RPC inside a loop or per-item callback where one batched call exists.

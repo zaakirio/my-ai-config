@@ -10,6 +10,8 @@ Find holes an attacker would use. Nothing else.
 
 Read the context file you were given. If you were given a PR-head tree path, greps and reads against it are authoritative; if you were told there is no tree, do not grep the working directory, which is a different commit.
 
+Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`GO4 at file:line`).
+
 ## Look for
 
 1. Injection: SQL, command, template, or header injection on a new sink; `eval` or equivalent on anything user-influenced; path traversal on new file handling.

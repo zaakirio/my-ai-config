@@ -10,6 +10,8 @@ Judge the diff as the person who inherits it in a year with no context. Three ax
 
 Read the context file you were given. If a PR-head tree path was provided, verify against it; if you were told there is no tree, say what you could not check.
 
+Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`TS9 at file:line`).
+
 ## 1. Comments and docstrings
 
 Verify every factual claim in an added or modified comment against the code beside it: signatures, described behaviour, referenced symbols, edge cases it says are handled, complexity claims. A wrong comment is worse than none.

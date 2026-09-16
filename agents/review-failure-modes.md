@@ -10,6 +10,8 @@ Hunt failures that happen quietly. Nothing else.
 
 Read the context file you were given. If you were given a PR-head tree path, greps against it are authoritative; if you were told there is no tree, do not grep the working directory.
 
+Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`GO1 at file:line`).
+
 Read `~/.claude/review/silent-failures.md` first and scan the diff for S1 through S18. Cite the code in each finding (`S6 at file:line`) so the author can look up the fix shape.
 
 ## Also check every error path in the diff

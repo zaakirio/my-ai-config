@@ -10,6 +10,8 @@ Find bugs that will bite, and gaps against what was asked for. Report nothing el
 
 Read the context file you were given. The diff is in it. If you were given a PR-head tree path, greps and reads against that path are authoritative; if you were told there is no tree, do not grep the working directory, which is a different commit.
 
+Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and scan for its numbered patterns alongside your own list, citing the code (`TS4 at file:line`).
+
 ## Look for
 
 1. Logic errors, null and undefined handling, off-by-one, race conditions.
