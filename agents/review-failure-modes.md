@@ -1,6 +1,6 @@
 ---
 name: review-failure-modes
-description: Audits a PR diff for silent failures, swallowed errors, bad fallbacks, and unactionable error messages. Spawned by the review-pr skill; also usable directly when asked to audit error handling.
+description: Audits a PR diff for silent failures, swallowed errors, bad fallbacks, and unactionable error messages. Spawned by the zk-review skill; also usable directly when asked to audit error handling.
 model: inherit
 color: yellow
 tools: Read, Grep, Glob, Bash

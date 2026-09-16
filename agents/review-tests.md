@@ -1,6 +1,6 @@
 ---
 name: review-tests
-description: Judges whether a PR's tests would catch the regressions that matter. Spawned by the review-pr skill; also usable directly when asked about test coverage on a change.
+description: Judges whether a PR's tests would catch the regressions that matter. Spawned by the zk-review skill; also usable directly when asked about test coverage on a change.
 model: sonnet
 color: cyan
 tools: Read, Grep, Glob, Bash

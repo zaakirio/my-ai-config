@@ -1,6 +1,6 @@
 ---
 name: review-performance
-description: Audits a PR diff for performance regressions with a real scaling story. Spawned by the review-pr skill; also usable directly when asked to review a change for performance.
+description: Audits a PR diff for performance regressions with a real scaling story. Spawned by the zk-review skill; also usable directly when asked to review a change for performance.
 model: inherit
 color: orange
 tools: Read, Grep, Glob, Bash

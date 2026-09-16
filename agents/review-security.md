@@ -1,6 +1,6 @@
 ---
 name: review-security
-description: Audits a PR diff for exploitable security holes. Spawned by the review-pr skill; also usable directly when asked to security-review a change.
+description: Audits a PR diff for exploitable security holes. Spawned by the zk-review skill; also usable directly when asked to security-review a change.
 model: inherit
 color: red
 tools: Read, Grep, Glob, Bash
