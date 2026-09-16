@@ -1,6 +1,6 @@
 ---
 name: review-correctness
-description: Reviews a PR diff for logic bugs and requirement coverage against the ticket. Spawned by the review-pr skill; also usable directly when asked to review code for correctness.
+description: Reviews a PR diff for logic bugs and requirement coverage against the ticket. Spawned by the zk-review skill; also usable directly when asked to review code for correctness.
 model: inherit
 color: green
 tools: Read, Grep, Glob, Bash

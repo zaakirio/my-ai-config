@@ -1,5 +1,5 @@
 ---
-name: fix-pr
+name: zk-fix
 description: Apply review feedback on a pull request. Fetches the comments, separates what is actionable from what needs a human, applies the fixes, and replies to every finding with what happened. Use when explicitly asked to address or fix review feedback on a specific PR. Edits the working tree; it only commits, pushes or replies when those flags are passed.
 argument-hint: "[PR] [--repo owner/repo] [--dry-run] [--commit] [--push] [--reply] [--from all|bot|humans]"
 allowed-tools: ["Bash", "Read", "Edit", "Grep", "Glob"]

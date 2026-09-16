@@ -1,5 +1,5 @@
 ---
-name: review-pr
+name: zk-review
 description: Review a pull request. Detects GitHub or Bitbucket, pulls ticket context from Jira or Linear, fans reviewer agents out over the diff, verifies their findings against the PR head, then posts inline comments and a verdict. Use when asked to review a specific PR or when a PR link is shared for review. It posts to the PR, so run it only for a real review of a real PR, never as background analysis.
 argument-hint: "[PR | TICKET-KEY | URL] [--repo owner/repo] [--local] [--no-approve] [correctness|errors|tests|quality|security|perf|all]"
 allowed-tools: ["Bash", "Read", "Grep", "Glob", "Agent"]

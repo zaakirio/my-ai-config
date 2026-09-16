@@ -1,6 +1,6 @@
 ---
 name: review-maintainability
-description: Reviews a PR diff for comment rot, weak type design, and needless complexity. Spawned by the review-pr skill; also usable directly when asked to review code quality on a change.
+description: Reviews a PR diff for comment rot, weak type design, and needless complexity. Spawned by the zk-review skill; also usable directly when asked to review code quality on a change.
 model: sonnet
 color: pink
 tools: Read, Grep, Glob, Bash
