@@ -7,7 +7,7 @@ Personal AI agent config. Source of truth; symlink into place on a new machine.
 - `skills/team/`: lead/engineer/QA agents coordinating through herdr panes.
 - `skills/review-pr/`, `skills/fix-pr/`: PR review and review-response, fanning out to the reviewer agents below.
 - `agents/review-*.md`: the six reviewer personas the review skill spawns in parallel, including security and performance specialists gated on diff signals.
-- `review/`: shared references both skills read at the step that needs them, plus `post-review.py`.
+- `review/`: shared references both skills read at the step that needs them, plus `post-review.py` and vendored security checklists under `review/reference/`.
 
 ## Install
 

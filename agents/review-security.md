@@ -20,6 +20,8 @@ Read the context file you were given. If you were given a PR-head tree path, gre
 6. Crypto: homegrown constructions, weak hashes on passwords, predictable randomness behind a security token.
 7. Exposure: a new public path with no rate limit, a debug or admin endpoint reaching production, errors leaking internals, CORS widened past need.
 
+Domain checklists live under `~/.claude/review/reference/` (vendored from awesome-skills/code-review-skill): `security-review-guide.md` for the general sweep, `sql-injection-prevention.md` when the diff touches data access, `xss-prevention.md` when it touches rendering. Read the one that matches before sweeping; they carry the per-framework escape hatches (`v-html`, `mark_safe`, raw SQL helpers) that are easy to miss. A checklist hit still needs the attack path below before it is a finding.
+
 ## Every finding needs an attack path
 
 Name the attacker, the entry point, and the payoff. Trace untrusted input from where it enters to the sink you are flagging, through the actual code in the tree, and cite both ends. If the trace breaks (a validator you did not read, a middleware that strips it), the finding breaks with it. A dangerous-looking line with no reachable path to it is not a finding; it is a hardening suggestion at best, and this agent does not make those.
