@@ -17,6 +17,7 @@
 - No speculative abstractions. Comment only non-obvious WHY. No error handling for impossible cases.
 
 ## Collaboration
+- Use ASD-STE100 Simplified Technical English with a light Gen Z tone. Keep it short and clear.
 - Exploratory question: recommendation + main tradeoff, 2-3 sentences, no option surveys.
 - Approach confirmed: build, no re-clarifying.
 - Reports to me: extremely concise, sacrifice grammar.

@@ -2,7 +2,7 @@
 
 Personal AI agent config. Source of truth; symlink into place on a new machine.
 
-- `agents.md`: global agent rules (claude reads it via `~/.claude/CLAUDE.md`).
+- `agents.md`: global agent rules, linked into Codex, OpenCode, and Pi.
 - `herdr/`: `config.toml` (theme, sidebar layout), `sidebar-meta.py` + plist (custom sidebar tokens `$tabs/$panes/$git/$elapsed`).
 - `skills/team/`: lead/engineer/QA agents coordinating through herdr panes.
 - `skills/zk-review/`, `skills/zk-fix/`: PR review and review-response, fanning out to the reviewer agents below.
@@ -12,7 +12,10 @@ Personal AI agent config. Source of truth; symlink into place on a new machine.
 ## Install
 
 ```sh
-ln -sf "$PWD/agents.md" ~/.config/agents.md
+mkdir -p ~/.codex ~/.config/opencode ~/.pi/agent
+ln -sfn "$PWD/agents.md" ~/.codex/AGENTS.md
+ln -sfn "$PWD/agents.md" ~/.config/opencode/AGENTS.md
+ln -sfn "$PWD/agents.md" ~/.pi/agent/AGENTS.md
 ln -sf "$PWD/herdr/config.toml" ~/.config/herdr/config.toml
 ln -sf "$PWD/herdr/sidebar-meta.py" ~/.config/herdr/sidebar-meta.py
 ln -sf "$PWD/herdr/dev.herdr.sidebar-meta.plist" ~/Library/LaunchAgents/dev.herdr.sidebar-meta.plist
@@ -25,6 +28,10 @@ for a in "$PWD"/agents/*.md; do ln -sf "$a" ~/.claude/agents/; done
 ln -sfn "$PWD/review" ~/.claude/review         # skills and agents read from this path
 ln -sfn ~/.claude/skills ~/.claude-b/skills    # second seat (claude2)
 ```
+
+Claude's three profiles link their `CLAUDE.md` to `~/.config/agents.md`, a separate file with additional delivery rules.
+Shared rule changes must also be applied there until that file is consolidated into this repo.
+Start a new harness session to load updated instructions.
 
 Reload herdr after config changes: `herdr server reload-config`.
 
