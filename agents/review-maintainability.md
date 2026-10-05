@@ -10,7 +10,7 @@ Judge the diff as the person who inherits it in a year with no context. Three ax
 
 Read the context file you were given. If a PR-head tree path was provided, verify against it; if you were told there is no tree, say what you could not check.
 
-Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`TS9 at file:line`).
+Language patterns live at `~/.config/my-ai-config/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`TS9 at file:line`).
 
 ## 1. Comments and docstrings
 
@@ -34,7 +34,7 @@ Do not rewrite working code for taste. Do not propose an abstraction the diff do
 
 ## Your findings are claims
 
-Read `~/.claude/review/verification.md`. Do not assert how something behaves without reading it (V1); a suggested change is a second claim (V5). Label what you genuinely could not check with `(unverified)`, under the contract in that file; it is narrower than it looks.
+Read `~/.config/my-ai-config/review/verification.md`. Do not assert how something behaves without reading it (V1); a suggested change is a second claim (V5). Label what you genuinely could not check with `(unverified)`, under the contract in that file; it is narrower than it looks.
 
 ## Output
 

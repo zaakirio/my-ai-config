@@ -1,13 +1,11 @@
 ---
 name: zk-fix
 description: Apply review feedback on a pull request. Fetches the comments, separates what is actionable from what needs a human, applies the fixes, and replies to every finding with what happened. Use when explicitly asked to address or fix review feedback on a specific PR. Edits the working tree; it only commits, pushes or replies when those flags are passed.
-argument-hint: "[PR] [--repo owner/repo] [--dry-run] [--commit] [--push] [--reply] [--from all|bot|humans]"
-allowed-tools: ["Bash", "Read", "Edit", "Grep", "Glob"]
 ---
 
-Arguments: "$ARGUMENTS"
+Use arguments from the user's skill invocation or request; `$ARGUMENTS` substitution is optional client syntax.
 
-References in `~/.claude/review/`: `hosts.md` for the host calls, `response-shapes.md` for replies, `verification.md` for the evidence discipline, `decision-authority.md` for what you settle versus what goes to a human, `diagnosis.md` when a finding rests on a claimed cause. Read each at the step that needs it.
+References in `~/.config/my-ai-config/review/`: `hosts.md` for the host calls, `response-shapes.md` for replies, `verification.md` for the evidence discipline, `decision-authority.md` for what you settle versus what goes to a human, `diagnosis.md` when a finding rests on a claimed cause. Read each at the step that needs it.
 
 Default is edit and stop. `--commit`, `--push`, `--reply` are opt-in and additive; `--push` implies `--commit`, `--reply` requires it.
 
@@ -38,10 +36,12 @@ Per finding:
 2. The finding and the fix suggested with it are two claims. A reviewer sees the diff, not the runtime, so correct diagnosis with a wrong prescription is the common case. Check the prescription against the tree before applying it; if the finding holds but their fix does not, fix it correctly and say so in the reply (verification.md V5).
 3. A factual claim you adopt from a reviewer becomes yours the moment you write it into code, a comment or a response. It needs the same evidence as one you authored (V10).
 4. If the fix is a class of problem rather than one site, grep for siblings and either fix them here or record the deferral explicitly (V2).
-5. A finding resting on a claimed cause is only as good as that cause. Read `~/.claude/review/diagnosis.md` before implementing one: fixing the masking condition makes the symptom go away and leaves the defect.
-6. Ambiguous or product-shaped, skip it and record why. `~/.claude/review/decision-authority.md` draws the line, and you do not adjudicate a finding against your own change: apply the decision or escalate it, never decide it.
+5. A finding resting on a claimed cause is only as good as that cause. Read `~/.config/my-ai-config/review/diagnosis.md` before implementing one: fixing the masking condition makes the symptom go away and leaves the defect.
+6. Ambiguous or product-shaped, skip it and record why. `~/.config/my-ai-config/review/decision-authority.md` draws the line, and you do not adjudicate a finding against your own change: apply the decision or escalate it, never decide it.
 
-After each file, run whatever the project actually gates on: typecheck, lint, the relevant tests. If validation fails, revert that file (`git checkout -- <file>`) and record it as reverted with the error. Do not leave a half-applied file behind.
+After a coherent fix, run the relevant checks, then the project-required gates before handoff.
+Investigate failures against the baseline; if reverting, undo only this run's patch and preserve pre-existing user edits.
+Never use whole-file checkout to erase unrelated work.
 
 Track every finding as fixed, skipped or reverted.
 
@@ -70,7 +70,7 @@ Re-fetch comments and reviews newer than your step 2 fetch. Reviews arrive in bu
 
 ## 9. Reply
 
-Every classified finding gets a reply, including the ones you did not action. Silence is not an outcome. Use the four shapes in `~/.claude/review/response-shapes.md`:
+Every classified finding gets a reply, including the ones you did not action. Silence is not an outcome. Use the four shapes in `~/.config/my-ai-config/review/response-shapes.md`:
 
 | outcome | shape |
 |---|---|

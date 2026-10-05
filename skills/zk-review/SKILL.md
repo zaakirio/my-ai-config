@@ -1,13 +1,14 @@
 ---
 name: zk-review
 description: Review a pull request. Detects GitHub or Bitbucket, pulls ticket context from Jira or Linear, fans reviewer agents out over the diff, verifies their findings against the PR head, then posts inline comments and a verdict. Use when asked to review a specific PR or when a PR link is shared for review. It posts to the PR, so run it only for a real review of a real PR, never as background analysis.
-argument-hint: "[PR | TICKET-KEY | URL] [--repo owner/repo] [--local] [--no-approve] [correctness|errors|tests|quality|security|perf|all]"
-allowed-tools: ["Bash", "Read", "Grep", "Glob", "Agent"]
 ---
 
-Arguments: "$ARGUMENTS"
+Use arguments from the user's skill invocation or request; `$ARGUMENTS` substitution is optional client syntax.
 
-References live in `~/.claude/review/`: `hosts.md` (GitHub and Bitbucket calls), `tickets.md` (Jira and Linear), `verification.md` (the evidence discipline, including the `(unverified)` contract), `diagnosis.md` (judging a claimed defect cause), `decision-authority.md` (what you decide versus what you escalate). Read a reference at the step that needs it, not upfront.
+References live in `~/.config/my-ai-config/review/`: `hosts.md` (GitHub and Bitbucket calls), `tickets.md` (Jira and Linear), `verification.md` (the evidence discipline, including the `(unverified)` contract), `diagnosis.md` (judging a claimed defect cause), `decision-authority.md` (what you decide versus what you escalate). Read a reference at the step that needs it, not upfront.
+
+Read `~/.config/my-ai-config/adapters/README.md` and the current client adapter before delegation.
+The reviewer files in `~/.config/my-ai-config/agents/` are the source prompts even when native named agents are unavailable.
 
 Two rules govern the whole run.
 
@@ -61,7 +62,7 @@ Comments by other reviewers: report only what they have not already raised. If y
 
 ## 5. Ticket context
 
-Follow `~/.claude/review/tickets.md`: extract a candidate, resolve which provider owns it, fetch, normalise. A candidate no provider claims is discarded and the review proceeds without ticket context. Never put an unconfirmed candidate in the summary.
+Follow `~/.config/my-ai-config/review/tickets.md`: extract a candidate, resolve which provider owns it, fetch, normalise. A candidate no provider claims is discarded and the review proceeds without ticket context. Never put an unconfirmed candidate in the summary.
 Unreachable and not-found are different claims. An auth failure reported as a missing ticket is how a PR with acceptance criteria gets reviewed as though it had none.
 
 ## 6. Assemble the context file
@@ -105,7 +106,9 @@ PERF=$(grep -cE '^\+.*\b(SELECT|INSERT|UPDATE|DELETE|JOIN|queries|cache|memo|pag
 | security | `review-security` | `SECURITY > 0` |
 | perf | `review-performance` | `PERF > 0` |
 
-Launch them in one message so they run concurrently. Each prompt carries: the context file path, the tree path or the explicit no-tree statement, the ticket provider and key if any, the reference directory as an absolute path (`REF=$(cd ~/.claude/review && pwd)`, since a subagent's Read will not expand `~`), and this instruction:
+Launch independent checks concurrently when the runtime adapter supports it.
+Otherwise run the same lenses serially and disclose the absence of independent review; do not issue APPROVE from self-review.
+Pass the corresponding `agents/<name>.md` prompt body to generic workers when named agents are unavailable. Each prompt carries: the context file path, the tree path or the explicit no-tree statement, the ticket provider and key if any, the reference directory as an absolute path (`REF=$(cd ~/.config/my-ai-config/review && pwd)`, since a subagent's Read will not expand `~`), and this instruction:
 
 ```
 Report findings as file:line using NEW-FILE line numbers from the right side of the diff.
@@ -116,7 +119,7 @@ On a re-review add: focus on the incremental diff, check whether unresolved huma
 
 ## 8. Verify before you believe any of it
 
-This is the step that makes the review worth posting. Read `~/.claude/review/verification.md` and apply it to the agents' output.
+This is the step that makes the review worth posting. Read `~/.config/my-ai-config/review/verification.md` and apply it to the agents' output.
 
 Resolve every conditional finding. "If X is set, then", "depends on whether the consumer does Y", "the author should confirm" means the agent lacked one fact and your job is to supply it. Spend a tool call or two: grep where the flag is set, read the consuming file, read the deployment source of truth rather than a README describing it. Then either promote it to a concrete finding with the resolved fact and `file:line`, or raise it as an explicit open question. Never pass the hedge through.
 
@@ -132,14 +135,14 @@ Decide it yourself, from what survived step 8, and default to refusing. Nobody o
 
 - **REQUEST_CHANGES**: any critical survives.
 - **COMMENT**: no critical, but importants survive, or unverified findings remain, or `COMMENTS_UNAVAILABLE`, or you could not confirm the head is current.
-- **APPROVE**: nothing above critical or important survived, the head is confirmed current, requirement coverage is complete except for author-side validation criteria, and you have a tree. Suggestions alone do not block.
+- **APPROVE**: nothing above critical or important survived, the head is confirmed current, requirement coverage is complete except for author-side validation criteria, and you have a tree and independent review. Suggestions alone do not block.
 
 `--no-approve` caps the verdict at COMMENT. `--local` posts nothing.
 The poster enforces the approve floor mechanically and has no override, so a verdict you cannot defend will simply be refused rather than argued with.
 
 An acceptance criterion describing how the author validates their own work is never a blocker: list it outstanding and judge the change on the code findings.
 
-Read `~/.claude/review/decision-authority.md` before the verdict. It owns the line between a finding you settle and one you put to a human, and the five elements an escalation has to carry. Two of its rules bind you here: a reviewer's wording never amends the accepted contract, and repeated findings on one theme are themselves the finding, not four independent ones to fix.
+Read `~/.config/my-ai-config/review/decision-authority.md` before the verdict. It owns the line between a finding you settle and one you put to a human, and the five elements an escalation has to carry. Two of its rules bind you here: a reviewer's wording never amends the accepted contract, and repeated findings on one theme are themselves the finding, not four independent ones to fix.
 
 ## 10. Re-check the head, then post
 
@@ -149,7 +152,7 @@ If the head moved, redo step 2 rather than posting against the old diff. If no f
 Write `$DIR/findings.json` (`{"summary": "...", "findings": [{"file", "line", "body", "severity"}]}`, severity being `critical`, `important` or `suggestion`) and post:
 
 ```bash
-python3 ~/.claude/review/post-review.py --host "$HOST" --owner "$OWNER" --repo "$REPO" \
+python3 ~/.config/my-ai-config/review/post-review.py --host "$HOST" --owner "$OWNER" --repo "$REPO" \
   --pr "$PR" --findings "$DIR/findings.json" --diff "$DIFF" --event "$VERDICT" --head "$TREE_REV"
 ```
 It resolves anchors against the on-disk diff and downgrades anything it cannot anchor to a general comment, so resolve anchors there rather than pulling hunks into your context. It also re-reads the head itself and exits non-zero if the PR moved or the head cannot be read, and refuses an APPROVE carrying a critical, an important, or an `(unverified)` finding. Both refusals are the gate working; do not route around either.
@@ -177,7 +180,8 @@ Critical N | Important N | Suggestions N | Unverified N | Already raised by othe
 
 ## 11. Clean up and report
 
-`git worktree remove --force "$DIR/head" 2>/dev/null; rm -rf "$DIR"`
+Remove only the worktree and temporary files created by this run after confirming no worker is still using them.
+Preserve the evidence needed for any unresolved finding.
 
 Report: host, mode, ticket key and which provider claimed it or that none did, agents run, finding counts, verdict, posted or local, and the full canonical PR URL. Say what you could not do and why, every time. State a verdict you could not reach honestly as exactly that.
 

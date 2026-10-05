@@ -29,6 +29,6 @@ Skip trivial getters. Check whether an existing integration test already covers 
 
 ## Your findings are claims
 
-Read `~/.claude/review/verification.md`. Do not assert a test does or does not cover something without reading it (V1). A suggested test is a second claim (V5): label one whose symbols and fixtures you could not confirm with `(unverified)`, under the contract in that file.
+Read `~/.config/my-ai-config/review/verification.md`. Do not assert a test does or does not cover something without reading it (V1). A suggested test is a second claim (V5): label one whose symbols and fixtures you could not confirm with `(unverified)`, under the contract in that file.
 
 Identify and advise only. Never modify code.

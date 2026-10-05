@@ -53,7 +53,7 @@ GitHub equivalents: `.user.login`, `.body`, `.path`, `.line` or `.original_line`
 Use `post-review.py` in this directory. It resolves every finding's anchor against the on-disk diff and posts inline comments plus the summary in one pass, for either host.
 
 ```bash
-python3 ~/.claude/review/post-review.py --host github --owner "$OWNER" --repo "$REPO" \
+python3 ~/.config/my-ai-config/review/post-review.py --host github --owner "$OWNER" --repo "$REPO" \
   --pr "$PR" --findings "$DIR/findings.json" --diff "$DIR/diff.patch" --event COMMENT --head "$HEAD_SHA"
 ```
 

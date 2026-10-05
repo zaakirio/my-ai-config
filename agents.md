@@ -7,7 +7,7 @@
 - Long Markdown: one sentence per physical line.
 
 ## Git
-- No AI co-author lines in commits.
+- No AI attribution anywhere: no co-author lines in commits, no "Generated with Claude Code" or similar in PR bodies, PR comments, issues, tickets or docs.
 - Never hand-edit CHANGELOG.md or auto-generated files.
 
 ## Engineering
@@ -24,3 +24,11 @@
 
 ## Claude-specific
 - NEVER invoke the artifact-design skill, under any circumstances. When using the Artifact tool, go straight to the tool call without loading that skill first.
+
+## Delivery
+- Deliver the smallest independently reviewable change that completes the accepted behavior.
+- Include the implementation, relevant tests, fixtures, types and documentation needed to use and verify that change.
+- Size commits by coherent intent and rollback needs; no quotas for commits, PRs or lines.
+- Report working behavior, evidence and remaining acceptance gaps; a green build alone does not prove delivery.
+- Follow the project's integration and publication rules, and reuse authorization already given for this task.
+- Fix unrelated defects in a separate coherent change without mixing another task's edits into the current one.

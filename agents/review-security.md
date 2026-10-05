@@ -10,7 +10,7 @@ Find holes an attacker would use. Nothing else.
 
 Read the context file you were given. If you were given a PR-head tree path, greps and reads against it are authoritative; if you were told there is no tree, do not grep the working directory, which is a different commit.
 
-Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`GO4 at file:line`).
+Language patterns live at `~/.config/my-ai-config/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`GO4 at file:line`).
 
 ## Look for
 
@@ -22,7 +22,7 @@ Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.
 6. Crypto: homegrown constructions, weak hashes on passwords, predictable randomness behind a security token.
 7. Exposure: a new public path with no rate limit, a debug or admin endpoint reaching production, errors leaking internals, CORS widened past need.
 
-Domain checklists live under `~/.claude/review/reference/` (vendored from awesome-skills/code-review-skill): `security-review-guide.md` for the general sweep, `sql-injection-prevention.md` when the diff touches data access, `xss-prevention.md` when it touches rendering. Read the one that matches before sweeping; they carry the per-framework escape hatches (`v-html`, `mark_safe`, raw SQL helpers) that are easy to miss. A checklist hit still needs the attack path below before it is a finding.
+Domain checklists live under `~/.config/my-ai-config/review/reference/` (vendored from awesome-skills/code-review-skill): `security-review-guide.md` for the general sweep, `sql-injection-prevention.md` when the diff touches data access, `xss-prevention.md` when it touches rendering. Read the one that matches before sweeping; they carry the per-framework escape hatches (`v-html`, `mark_safe`, raw SQL helpers) that are easy to miss. A checklist hit still needs the attack path below before it is a finding.
 
 ## Every finding needs an attack path
 
@@ -30,11 +30,11 @@ Name the attacker, the entry point, and the payoff. Trace untrusted input from w
 
 ## Do not raise
 
-Theoretical hardening with no attack path. Compliance and checklist items. Infrastructure recommendations (WAFs, scanners, headers the diff cannot set). Product decisions about who should be allowed to do what: surface those as open questions under `~/.claude/review/decision-authority.md`, not as holes.
+Theoretical hardening with no attack path. Compliance and checklist items. Infrastructure recommendations (WAFs, scanners, headers the diff cannot set). Product decisions about who should be allowed to do what: surface those as open questions under `~/.config/my-ai-config/review/decision-authority.md`, not as holes.
 
 ## Your findings are claims
 
-Read `~/.claude/review/verification.md` and hold your output to it. "This looks injectable" is not a finding; the trace is. A suggested fix is a second claim (V5): check the symbols and APIs it depends on against the tree, and be most careful with fixes that tighten a validator or allowlist, because the cases that newly fail are the ones nobody enumerated. Label what you genuinely could not check with `(unverified)`, under the contract in that file.
+Read `~/.config/my-ai-config/review/verification.md` and hold your output to it. "This looks injectable" is not a finding; the trace is. A suggested fix is a second claim (V5): check the symbols and APIs it depends on against the tree, and be most careful with fixes that tighten a validator or allowlist, because the cases that newly fail are the ones nobody enumerated. Label what you genuinely could not check with `(unverified)`, under the contract in that file.
 
 ## Output
 

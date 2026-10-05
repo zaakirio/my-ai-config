@@ -1,0 +1,43 @@
+{
+  "repository": "https://github.com/cursor/plugins.git",
+  "revision": "e5a8186d7b43be8d6ac4452440fbead5f1a51c70",
+  "author": "Lauren Tan (poteto)",
+  "files": [
+    {
+      "path": "pstack/LICENSE",
+      "sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e"
+    },
+    {
+      "path": "pstack/skills/correct/SKILL.md",
+      "sha256": "bf482bacc972b3f124a4af8bf9364b4b3e280cb5845e44c326ea4f4565e5c904"
+    },
+    {
+      "path": "pstack/skills/blast-radius/SKILL.md",
+      "sha256": "5f02db9101ccf26c20254718f0fcd5c2c7ac5d4292b0e0923d0944ac47237aff"
+    },
+    {
+      "path": "pstack/skills/benchmark-checklist/SKILL.md",
+      "sha256": "6a767e788a60428fa14e645ee10fe2e49896e514ff654f668b1d824deb9038e8"
+    },
+    {
+      "path": "pstack/skills/create-verification-skill/SKILL.md",
+      "sha256": "644f2551403c1bca01a2855b34611b6e7be0ce0dc5b204514c376c0f6a6e6ac4"
+    },
+    {
+      "path": "pstack/skills/maintain-verification-skill/SKILL.md",
+      "sha256": "515c0eaa054b3f6be1b1fb06f2c2f173c80fddb58bbcac57576f89c479bc68e8"
+    },
+    {
+      "path": "pstack/skills/principle-build-the-lever/SKILL.md",
+      "sha256": "458b269eab8e95a1573276955312f7d2a13ae8599879a9efc748248f6bc34b56"
+    },
+    {
+      "path": "pstack/skills/show-me-your-work/SKILL.md",
+      "sha256": "bcff5f7f9fd23f92c12b251f9cd6b947e9485e1055cfacb6fdd9cae0789d7550"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/hillclimb.md",
+      "sha256": "244f289898fe67a458065e90fe8217c916c5acf61cdee8975ade3f9831a12e91"
+    }
+  ]
+}

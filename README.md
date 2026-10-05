@@ -1,60 +1,74 @@
 # my-ai-config
 
-Personal AI agent config. Source of truth; symlink into place on a new machine.
+One portable source for personal rules, skills, review prompts and scripts.
+Shared workflows use the Agent Skills format; thin [runtime adapters](adapters/README.md) explain client-specific discovery and delegation.
+The entire bundle is installed at `~/.config/my-ai-config`, so shared references do not depend on Claude or the checkout location.
 
-- `agents.md`: global agent rules, linked into Codex, OpenCode, and Pi.
-- `herdr/`: `config.toml` (theme, sidebar layout), `sidebar-meta.py` + plist (custom sidebar tokens `$tabs/$panes/$git/$elapsed`).
-- `skills/team/`: lead/engineer/QA agents coordinating through herdr panes.
-- `skills/zk-review/`, `skills/zk-fix/`: PR review and review-response, fanning out to the reviewer agents below.
-- `agents/review-*.md`: the six reviewer personas the review skill spawns in parallel, including security and performance specialists gated on diff signals.
-- `review/`: shared references both skills read at the step that needs them, plus `post-review.py`, first-party language patterns (`typescript.md`, `go.md`, `react.md`), and vendored security checklists under `review/reference/`.
+## Install and verify
 
-## Install
+Requires Python 3 and Git on macOS or Linux.
+Clone this repository anywhere, then run from its root:
 
 ```sh
-mkdir -p ~/.codex ~/.config/opencode ~/.pi/agent
-ln -sfn "$PWD/agents.md" ~/.codex/AGENTS.md
-ln -sfn "$PWD/agents.md" ~/.config/opencode/AGENTS.md
-ln -sfn "$PWD/agents.md" ~/.pi/agent/AGENTS.md
-ln -sf "$PWD/herdr/config.toml" ~/.config/herdr/config.toml
-ln -sf "$PWD/herdr/sidebar-meta.py" ~/.config/herdr/sidebar-meta.py
-ln -sf "$PWD/herdr/dev.herdr.sidebar-meta.plist" ~/Library/LaunchAgents/dev.herdr.sidebar-meta.plist
-mkdir -p ~/.agents/skills ~/.claude/skills ~/.claude/agents
-for s in team zk-review zk-fix; do
-  ln -sfn "$PWD/skills/$s" ~/.agents/skills/$s
-  ln -sfn "$PWD/skills/$s" ~/.claude/skills/$s
-done
-for a in "$PWD"/agents/*.md; do ln -sf "$a" ~/.claude/agents/; done
-ln -sfn "$PWD/review" ~/.claude/review         # skills and agents read from this path
-ln -sfn ~/.claude/skills ~/.claude-b/skills    # second seat (claude2)
+python3 scripts/config.py install --dry-run
+python3 scripts/config.py install
+python3 scripts/config.py doctor
 ```
 
-Claude's three profiles link their `CLAUDE.md` to `~/.config/agents.md`, a separate file with additional delivery rules.
-Shared rule changes must also be applied there until that file is consolidated into this repo.
-Start a new harness session to load updated instructions.
+The default targets are Codex, Claude Code, OpenCode and Pi.
+Use `--clients codex claude cursor` to select targets; Cursor receives skills, while its rules remain under your existing Cursor configuration.
+Additional Claude seats use repeatable `--claude-profile ~/.claude-b` arguments on both install and doctor.
+Rerunning installation is safe and discovers new skills automatically.
+A conflict stops the whole plan before links change; inspect it and use `--replace` to retain a dated backup before replacement.
+Existing unrelated skills/settings remain untouched.
+Use `--home /tmp/clean-agent-home` to test installation without changing your real home.
+Move the checkout by rerunning installation from its new path with `--replace`; do not copy only `SKILL.md` files.
+Start a fresh client session if new skills are not discovered.
 
-Reload herdr after config changes: `herdr server reload-config`.
+`agents.md` is the only global rule source, including delivery rules previously held separately in `~/.config/agents.md`.
+The installer links that legacy path too, preserving existing Claude seat links.
+The optional macOS Herdr sidebar remains in `herdr/`; it is not required for any portable skill.
+For a Herdr team, follow [its runtime adapter](adapters/herdr.md).
 
-## PR review
+## Skills
 
-`/zk-review [PR | TICKET-KEY | URL]` fetches the PR and its diff to disk, checks the PR head out into a worktree, pulls acceptance criteria from Jira or Linear, runs the six reviewer agents in parallel, verifies what they report against the head tree, then posts inline comments and a verdict. It approves only when nothing critical or important survives verification; `--local` posts nothing and `--no-approve` caps the verdict at a comment.
+| Skill | Use |
+| --- | --- |
+| `zk-review` | Requested PR review with ticket context, independent lenses and verified findings |
+| `zk-fix` | Apply requested review feedback; commit, push and replies remain opt-in |
+| `team` | Explicit engineer/QA coordination with isolated writers |
+| `zk-correct` | Prevent a repeated mistake with a proven structural check |
+| `zk-blast-radius` | Prove a shared change's key safety assumption |
+| `zk-perf` | Measure a real bottleneck and retain only verified wins |
+| `zk-create-verifier` | Build a project-owned runtime verification skill from existing tools |
+| `zk-maintain-verifier` | Check verifier instructions against source and live behavior |
 
-`/zk-fix [PR]` does the other direction: fetch the review comments, separate actionable from needs-a-human, apply the fixes, and reply to every finding as Fixed, Deferred, Investigated or Disputed. It edits the working tree and stops; `--commit`, `--push` and `--reply` are opt-in.
+Use the skill's name in a request; exact menu syntax differs by client and is documented in its adapter.
+Reviewer prompts live in `agents/`; Claude can register them natively, while other clients read the same prompt bodies through their available workers.
+No adapter assumes that installing Markdown provides a new model, subagent tool, cloud machine or scheduler.
+Project feature maps and delivery commands stay in each project's repository.
 
-Under `/team`, the lead runs `/zk-review` and maps the verdict onto the PASS/FAIL protocol; the engineer runs `/zk-fix` against a FAIL.
+## Review and feedback
 
-The reference the whole thing rests on is `review/verification.md`: ten checks, each added after a real failure, that stop a review asserting what it has not verified. Beside it, `review/diagnosis.md` separates a defect's trigger from the condition masking it, and `review/decision-authority.md` draws the line between a finding the reviewer settles and one that goes to a human.
+`zk-review` checks the exact PR head, resolves ticket criteria, verifies findings and rechecks the remote head before posting.
+Use `--local` for a local report and `--no-approve` to cap a posted verdict at COMMENT.
+`zk-fix` edits and stops by default; `--commit`, `--push` and `--reply` are additive opt-ins.
+[Verification](review/verification.md), [diagnosis](review/diagnosis.md) and [decision authority](review/decision-authority.md) remain the evidence contract.
+`review/post-review.py` mechanically refuses stale-head posts and approvals with blocking or unverified findings.
 
-Two invariants are enforced in `review/post-review.py` rather than in prose, because prose fails silently on a long run: it refuses to post against a head that has moved, and refuses an approve carrying a critical, an important, or an unverified finding.
+Credentials remain outside this repository: GitHub uses `gh auth login` or `GITHUB_TOKEN`; Bitbucket uses `BITBUCKET_TOKEN`; Linear uses `LINEAR_API_KEY`; Jira uses `JIRA_API_TOKEN`, `JIRA_EMAIL`, and `JIRA_INSTANCE`.
+See [host calls](review/hosts.md) and [ticket resolution](review/tickets.md) when needed.
 
-### Environment
+## Lauren's upstream
 
-| Variable | For |
-|---|---|
-| `GITHUB_TOKEN` or `gh auth login` | GitHub |
-| `BITBUCKET_TOKEN` | Bitbucket, an Atlassian API token used with `git config user.email` |
-| `LINEAR_API_KEY` | Linear, sent raw with no `Bearer` prefix |
-| `JIRA_API_TOKEN`, `JIRA_EMAIL`, `JIRA_INSTANCE` | Jira |
-| `TICKET_PROVIDER`, `LINEAR_TEAM_KEYS`, `JIRA_PROJECT_KEYS` | optional, skips provider probing in a workspace running both trackers |
+Selected workflows are adapted directly from [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack), not a community port.
+[Source provenance](upstream/pstack/README.md) includes the pinned revision, unchanged originals, hashes, adaptation map and MIT notice.
 
-Everything degrades: no ticket provider means the code is still reviewed and the summary says ticket context was unavailable. A host that cannot be reached is reported, never worked around.
+```sh
+python3 scripts/check-upstream.py --offline
+python3 scripts/check-upstream.py
+python3 -m unittest discover -s tests -v
+```
+
+The network check reports changes only; it never installs or executes remote instructions.
+Review upstream changes before refreshing the pin.

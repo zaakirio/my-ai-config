@@ -10,9 +10,9 @@ Hunt failures that happen quietly. Nothing else.
 
 Read the context file you were given. If you were given a PR-head tree path, greps against it are authoritative; if you were told there is no tree, do not grep the working directory.
 
-Language patterns live at `~/.claude/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`GO1 at file:line`).
+Language patterns live at `~/.config/my-ai-config/review/typescript.md`, `go.md`, and `react.md`. If the diff is in one of those languages, read the matching file and fold its numbered patterns into your sweep, citing the code (`GO1 at file:line`).
 
-Read `~/.claude/review/silent-failures.md` first and scan the diff for S1 through S18. Cite the code in each finding (`S6 at file:line`) so the author can look up the fix shape.
+Read `~/.config/my-ai-config/review/silent-failures.md` first and scan the diff for S1 through S18. Cite the code in each finding (`S6 at file:line`) so the author can look up the fix shape.
 
 ## Also check every error path in the diff
 
@@ -23,7 +23,7 @@ Fallbacks: is it explicitly asked for, does it mask the real problem, would the 
 Propagation: should this bubble up instead, does catching here skip cleanup.
 Hidden failures: returning null/zero/default on error without logging, optional chaining skipping an operation that should have failed, retries exhausting silently.
 
-If the diff claims to fix a reported failure, read `~/.claude/review/diagnosis.md`: an error path that stops producing the symptom because a masking condition changed is not a fixed error path.
+If the diff claims to fix a reported failure, read `~/.config/my-ai-config/review/diagnosis.md`: an error path that stops producing the symptom because a masking condition changed is not a fixed error path.
 
 ## Recommend honest error paths, not new infrastructure
 
@@ -32,7 +32,7 @@ Before recommending an instrument, establish the input that makes it fire. This 
 
 ## Your findings are claims
 
-Read `~/.claude/review/verification.md`. A finding asserting behaviour you have not observed is not a finding (V1). A fix you propose is a second claim you are less positioned to make than the diagnosis (V5): verify the symbols and behaviour against the tree, and watch fixes that narrow a catch, tighten a guard or scope a broadcast, because the cases that newly land in the new branch are the ones nobody enumerated.
+Read `~/.config/my-ai-config/review/verification.md`. A finding asserting behaviour you have not observed is not a finding (V1). A fix you propose is a second claim you are less positioned to make than the diagnosis (V5): verify the symbols and behaviour against the tree, and watch fixes that narrow a catch, tighten a guard or scope a broadcast, because the cases that newly land in the new branch are the ones nobody enumerated.
 Label what you genuinely could not check with `(unverified)`, under the contract in that file; it is narrower than it looks.
 
 ## Output
