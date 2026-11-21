@@ -28,7 +28,7 @@ def main_worktree(path):
     return Path(listing.splitlines()[0].removeprefix('worktree '))
 
 
-def worktrees(main):
+def worktrees(main, include_primary):
     rows, current = [], {}
     for line in git(main, 'worktree', 'list', '--porcelain').splitlines() + ['']:
         if not line:
@@ -38,7 +38,7 @@ def worktrees(main):
             continue
         key, _, value = line.partition(' ')
         current[key] = value or True
-    return rows[1:]
+    return rows if include_primary else rows[1:]
 
 
 def base_ref(main, requested):
@@ -89,28 +89,53 @@ def size_kb(path):
     return int(result.stdout.split()[0]) if result.stdout else 0
 
 
-def classify(row, base, prs, recent_hours, now):
+def process_cwds():
+    found = []
+    for proc in Path('/proc').glob('[0-9]*'):
+        if proc.name == str(os.getpid()):
+            continue
+        try:
+            found.append(((proc / 'cwd').readlink(), {'pid': int(proc.name), 'name': (proc / 'comm').read_text().strip()}))
+        except (OSError, UnicodeError):
+            continue
+    return found
+
+
+def classify(row, main_path, base, prs, recent_hours, now, processes):
     path = Path(row['worktree'])
     branch = row.get('branch', '').removeprefix('refs/heads/')
+    working = [info for cwd, info in processes if cwd.is_relative_to(path)]
+    signals = {'processes': working, 'locked': 'locked' in row,
+               'lockReason': row['locked'] if isinstance(row.get('locked'), str) else None}
     if 'prunable' in row or not path.exists():
         # Git no longer tracks this checkout; `git worktree prune` drops the record, and any leftover directory is reported, not deleted.
         return {'worktree': str(path), 'branch': branch or 'detached', 'sizeKb': size_kb(path) if path.exists() else 0, 'idleHours': None,
-                'merged': False, 'pr': '-', 'tracked': 0, 'untracked': 0, 'claim': None, 'bucket': 'broken'}
+                'merged': False, 'pr': '-', 'tracked': None, 'untracked': None, 'claim': None, 'bucket': 'broken', **signals}
     active = last_activity(path)
-    status = git(path, 'status', '--porcelain', check=False).splitlines()
-    tracked = sum(not line.startswith('??') for line in status)
-    untracked = len(status) - tracked
+    status = subprocess.run(['git', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-C', str(path),
+                             'status', '--porcelain=v1', '-z', '--no-renames', '--untracked-files=normal'], capture_output=True)
+    tracked = untracked = None
+    if status.returncode == 0:
+        entries = [entry for entry in status.stdout.split(b'\0') if entry]
+        untracked = sum(entry.startswith(b'?? ') for entry in entries)
+        tracked = len(entries) - untracked
     merged = bool(row.get('HEAD')) and subprocess.run(['git', '-C', str(path), 'merge-base', '--is-ancestor', row['HEAD'], base]).returncode == 0
     pr = prs.get(branch, '-') if branch else '-'
     owner = claim(path) if branch else None
     idle_hours = (now - active) / 3600 if active else None
-    if owner:
+    if path == main_path:
+        bucket = 'primary'
+    elif signals['locked']:
+        bucket = 'hold-locked'
+    elif owner:
         bucket = 'hold-claimed'
+    elif tracked is None:
+        bucket = 'review'
     elif tracked:
         bucket = 'hold-wip'
     elif pr.endswith(('/open', '/draft')):
         bucket = 'hold-open-pr'
-    elif idle_hours is not None and idle_hours < recent_hours:
+    elif working or (idle_hours is not None and idle_hours < recent_hours):
         bucket = 'active'
     elif (merged or pr.endswith(('/merged', '/closed'))) and not untracked:
         bucket = 'safe'
@@ -119,7 +144,7 @@ def classify(row, base, prs, recent_hours, now):
     return {
         'worktree': str(path), 'branch': branch or 'detached', 'sizeKb': size_kb(path),
         'idleHours': round(idle_hours) if idle_hours is not None else None, 'merged': merged, 'pr': pr,
-        'tracked': tracked, 'untracked': untracked, 'claim': owner, 'bucket': bucket,
+        'tracked': tracked, 'untracked': untracked, 'claim': owner, 'bucket': bucket, **signals,
     }
 
 
@@ -149,11 +174,13 @@ def main():
     parser.add_argument('--base', help='Ref that MERGED checks against; default origin/HEAD, origin/main, origin/master')
     parser.add_argument('--recent-hours', type=float, default=72, help='Git activity newer than this keeps a worktree active (default 72)')
     parser.add_argument('--offline', action='store_true', help='Skip the GitHub PR lookup')
+    parser.add_argument('--include-primary', action='store_true', help='Include the primary checkout in disk totals; never prune it')
     parser.add_argument('--json', action='store_true')
     parser.add_argument('--prune', action='store_true', help="Remove every worktree in the 'safe' bucket and the git records of 'broken' ones")
     args = parser.parse_args()
 
     now, rows = time.time(), []
+    processes = process_cwds()
     for main_path in repos_from(args):
         base = base_ref(main_path, args.base)
         if base.startswith('origin/') and not args.offline:
@@ -162,7 +189,8 @@ def main():
                 print(f'warn: could not fetch {base} in {main_path}; MERGED may be stale', file=sys.stderr)
         prs = pull_requests(main_path, args.offline)
         with ThreadPoolExecutor(max_workers=8) as pool:
-            for result in pool.map(lambda row: classify(row, base, prs, args.recent_hours, now), worktrees(main_path)):
+            for result in pool.map(lambda row: classify(row, main_path, base, prs, args.recent_hours, now, processes),
+                                   worktrees(main_path, args.include_primary)):
                 rows.append({'repo': str(main_path), 'base': base, **result})
     rows.sort(key=lambda r: r['sizeKb'], reverse=True)
 
@@ -180,11 +208,12 @@ def main():
     if args.json:
         print(json.dumps({'worktrees': rows, 'removed': [r['worktree'] for r in removed]}, indent=2))
         return
-    print('SIZE\tIDLE\tMERGED\tPR\tTRACKED\tUNTRACKED\tCLAIM\tBUCKET\tBRANCH\tWORKTREE')
+    print('SIZE\tIDLE\tMERGED\tPR\tTRACKED\tUNTRACKED\tCLAIM\tLOCK\tPIDS\tBUCKET\tBRANCH\tWORKTREE')
     for r in rows:
         idle = '?' if r['idleHours'] is None else f"{r['idleHours']}h"
         print('\t'.join([human(r['sizeKb']), idle, 'yes' if r['merged'] else 'no', r['pr'], str(r['tracked']), str(r['untracked']),
-                         r['claim'] or '-', r['bucket'], r['branch'], r['worktree']]))
+                         r['claim'] or '-', r['lockReason'] or ('locked' if r['locked'] else '-'),
+                         ','.join(str(p['pid']) for p in r['processes']) or '-', r['bucket'], r['branch'], r['worktree']]))
     safe = sum(r['sizeKb'] for r in rows if r['bucket'] == 'safe')
     verb = 'removed' if args.prune else 'reclaimable with --prune'
     print(f"# {len(rows)} worktrees, {human(sum(r['sizeKb'] for r in rows))} total, {human(sum(r['sizeKb'] for r in removed) if args.prune else safe)} {verb}")
