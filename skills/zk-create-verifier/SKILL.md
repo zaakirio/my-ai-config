@@ -10,6 +10,7 @@ When seed data lacks a journey's precondition, the journey reports failure and t
 Reuse existing CLIs and fixtures; add only missing controls with descriptive errors and bounded execution.
 Put the skill and a small feature map in the project's skill directory, not the personal configuration bundle.
 Each feature names its user entry point, control command, expected observation, evidence tier and prerequisites.
+For visual and release checks, add only the applicable fields from `~/.config/my-ai-config/review/target-proof.md` to the project feature map.
 Make source, real-process, device and deployment evidence visibly distinct.
 Keep raw artifacts outside the skill; record source identity and artifact hashes with each result.
 Prove the workflow on one mapped feature from launch through verification and cleanup.

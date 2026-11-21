@@ -22,6 +22,9 @@ The original [MIT licence](source/LICENSE) applies to those files and their adap
 | `agents.md` Debugging | Bug fix, Attack the Premise, Fix Root Causes |
 | `agents.md` Long runs | Autonomous run, Shipping (merge read-back) |
 | `scripts/workflow/prose-lint.py` | `unslop` |
+| Visual and release target proof | Visual parity, Prove it works, Shipping |
+| Paired-revision diagnosis | Benny's Verify existing fix |
+| `zk-blast-radius` ordering checks | Create formal verification skill |
 
 Run `python3 scripts/check-upstream.py --offline` to check the retained originals.
 Run `python3 scripts/check-upstream.py` to compare those same files at upstream's current `main`.

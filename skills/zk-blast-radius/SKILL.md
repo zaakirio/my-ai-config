@@ -7,6 +7,8 @@ State the changed behavior and the one assumption on which its safety depends.
 Follow callers, serialized bytes, stored records, generated consumers, platform variants and teardown timing that a symbol search misses.
 Check the actual pinned library implementation where its semantics matter.
 Run the smallest real-code control that can disprove the assumption.
+For a retry or ordering invariant, drive two competing events in a fixed order and assert the visible state between them as well as after recovery.
+Use a bounded model only for event orders the real-code test cannot cover; record the bound, mapping to current code and shortest counterexample, then replay it against the implementation.
 For UI or process ownership changes, include the running surface and the replacement/retry path.
 Separate confirmed risk, cleared risk and unproven assumptions; no list of hypothetical warnings.
 Feed the result into the existing review workflow rather than starting a second review process.

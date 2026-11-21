@@ -1,0 +1,8 @@
+[Unit]
+Description=Expire completed managed agent artifacts
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.config/my-ai-config/scripts/workspace.py prune
+Nice=10
+IOSchedulingClass=idle

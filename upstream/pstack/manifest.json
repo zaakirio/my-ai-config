@@ -8,6 +8,10 @@
       "sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e"
     },
     {
+      "path": "pstack/automations/benny/skills/reproduce-and-fix-issues/references/verify-existing-fix.md",
+      "sha256": "c90eae00abcdec71a58fa8d60f2c495b082a526ad50b8e8e494837609129bf29"
+    },
+    {
       "path": "pstack/skills/benchmark-checklist/SKILL.md",
       "sha256": "5efd79495e3eebf3b53814861330fe812458212958f8f009492e866c329161f6"
     },
@@ -18,6 +22,10 @@
     {
       "path": "pstack/skills/correct/SKILL.md",
       "sha256": "e347045d00c967a0b831ef883cc6ac79d21329aa10b5968637df95de7febf0ba"
+    },
+    {
+      "path": "pstack/skills/create-formal-verification-skill/SKILL.md",
+      "sha256": "30ef0ac27612ecd16fdc081112113221d673053cef3f8603db11932193861211"
     },
     {
       "path": "pstack/skills/create-verification-skill/SKILL.md",
@@ -64,6 +72,10 @@
       "sha256": "486a6211859eeacfc9a85c7a9d2632b7dddecad189a6b2551212ef274ef1d85c"
     },
     {
+      "path": "pstack/skills/poteto-mode/playbooks/visual-parity.md",
+      "sha256": "950ca51999a6454c98eee6bcbc3d1bbe501a4e3a5d5439b6f6ddc378991b256c"
+    },
+    {
       "path": "pstack/skills/poteto-mode/playbooks/worktree-cleanup.md",
       "sha256": "2d4d3dcc9e4ddff4770c5f2a254c7915e6bbed968861cfa0c3c45bd04f99b3a5"
     },
@@ -86,6 +98,10 @@
     {
       "path": "pstack/skills/principle-fix-root-causes/SKILL.md",
       "sha256": "79afd7e67d8951203231f6f1ccfc7b4a1f30d8d6cdb68e92755c80012414dbeb"
+    },
+    {
+      "path": "pstack/skills/principle-prove-it-works/SKILL.md",
+      "sha256": "3d6c482e341974cfcb8d19ebf66fb1d4274d8673af35e36d3c231a6aa9e03f25"
     },
     {
       "path": "pstack/skills/reflect/SKILL.md",
