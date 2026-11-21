@@ -5,6 +5,7 @@ Adapted from pstack's worktree-audit.sh. Branch refs survive removal, so a prune
 worktree is recoverable with `git worktree add <path> <branch>`.
 """
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 from pathlib import Path
@@ -37,7 +38,7 @@ def worktrees(main):
             continue
         key, _, value = line.partition(' ')
         current[key] = value or True
-    return [row for row in rows[1:] if Path(row['worktree']).exists()]
+    return rows[1:]
 
 
 def base_ref(main, requested):
@@ -72,10 +73,15 @@ def claim(path):
 
 
 def last_activity(path):
-    # Read before `git status`, which refreshes the index and would reset its mtime.
+    # Use the time inside the last HEAD reflog entry (commit, checkout, reset). File mtimes are noise:
+    # `git status` rewrites the index and git maintenance rewrites the reflog file.
     gitdir = Path(git(path, 'rev-parse', '--path-format=absolute', '--git-dir'))
-    stamps = [(gitdir / name).stat().st_mtime for name in ('HEAD', 'index', 'logs/HEAD') if (gitdir / name).exists()]
-    return max(stamps, default=0)
+    log = gitdir / 'logs/HEAD'
+    if log.exists():
+        lines = log.read_text(errors='replace').splitlines()
+        if lines:
+            return int(lines[-1].split('\t', 1)[0].split()[-2])
+    return int(git(path, 'log', '-1', '--format=%ct', check=False) or 0)
 
 
 def size_kb(path):
@@ -85,8 +91,12 @@ def size_kb(path):
 
 def classify(row, base, prs, recent_hours, now):
     path = Path(row['worktree'])
-    active = last_activity(path)
     branch = row.get('branch', '').removeprefix('refs/heads/')
+    if 'prunable' in row or not path.exists():
+        # Git no longer tracks this checkout; `git worktree prune` drops the record, and any leftover directory is reported, not deleted.
+        return {'worktree': str(path), 'branch': branch or 'detached', 'sizeKb': size_kb(path) if path.exists() else 0, 'idleHours': None,
+                'merged': False, 'pr': '-', 'tracked': 0, 'untracked': 0, 'claim': None, 'bucket': 'broken'}
+    active = last_activity(path)
     status = git(path, 'status', '--porcelain', check=False).splitlines()
     tracked = sum(not line.startswith('??') for line in status)
     untracked = len(status) - tracked
@@ -140,7 +150,7 @@ def main():
     parser.add_argument('--recent-hours', type=float, default=72, help='Git activity newer than this keeps a worktree active (default 72)')
     parser.add_argument('--offline', action='store_true', help='Skip the GitHub PR lookup')
     parser.add_argument('--json', action='store_true')
-    parser.add_argument('--prune', action='store_true', help="Remove every worktree in the 'safe' bucket, then git worktree prune")
+    parser.add_argument('--prune', action='store_true', help="Remove every worktree in the 'safe' bucket and the git records of 'broken' ones")
     args = parser.parse_args()
 
     now, rows = time.time(), []
@@ -151,8 +161,9 @@ def main():
                               capture_output=True, timeout=120).returncode:
                 print(f'warn: could not fetch {base} in {main_path}; MERGED may be stale', file=sys.stderr)
         prs = pull_requests(main_path, args.offline)
-        for row in worktrees(main_path):
-            rows.append({'repo': str(main_path), 'base': base, **classify(row, base, prs, args.recent_hours, now)})
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            for result in pool.map(lambda row: classify(row, base, prs, args.recent_hours, now), worktrees(main_path)):
+                rows.append({'repo': str(main_path), 'base': base, **result})
     rows.sort(key=lambda r: r['sizeKb'], reverse=True)
 
     removed = []
@@ -163,7 +174,7 @@ def main():
                 print(f"warn: kept {row['worktree']}: {result.stderr.strip()}", file=sys.stderr)
             else:
                 removed.append(row)
-        for repo in {r['repo'] for r in removed}:
+        for repo in {r['repo'] for r in rows if r in removed or r['bucket'] == 'broken'}:
             git(repo, 'worktree', 'prune')
 
     if args.json:
