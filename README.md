@@ -89,6 +89,8 @@ Use the skill's name in a request; exact menu syntax differs by client and is do
 Reviewer prompts live in `agents/`; Claude can register them natively, while other clients read the same prompt bodies through their available workers.
 No adapter assumes that installing Markdown provides a new model, subagent tool, cloud machine or scheduler.
 Project feature maps and delivery commands stay in each project's repository.
+For visual and release tasks, use the [target-proof recipe](review/target-proof.md) for the first handback and the pilot measures.
+For a disputed fix, use the [paired-revision check](review/diagnosis.md#reviewing-a-fix) before editing.
 
 ## Review and feedback
 

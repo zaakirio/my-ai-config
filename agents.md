@@ -34,6 +34,7 @@
 - Fix unrelated defects in a separate coherent change without mixing another task's edits into the current one.
 
 ## Debugging
+- For a disputed or already-fixed bug, compare the failing revision and candidate on the same user path before patching. Use `~/.config/my-ai-config/review/diagnosis.md`.
 - Reproduce on the real surface yourself before asking me; ask only with the specific reason the surface cannot reach it.
 - List the candidate causes, then rule them out with runtime evidence; instrument and read real state instead of guessing.
 - When evidence refutes a hypothesis, revert the code it motivated; "might help" guards, retries and clamps do not ship.
@@ -55,5 +56,6 @@
 - Managed completed artifacts expire after seven days. Use `run --pin` for acceptance proof, or copy the final compact proof into the project. Never treat chat attachments, source artwork, databases or worktrees as disposable captures.
 - Start from the intended integration branch. Record the baseline, dirty files and overlapping work before editing. Inspect existing deployment configuration and running services before proposing new hosting or credentials.
 - Define one observable delivery checkpoint before implementation. For visual work, get acceptance of a representative screen before extending its shared pattern. An accepted screen stays closed unless a defect or new request reopens it.
+- For a changed visual state or a requested release, use `~/.config/my-ai-config/review/target-proof.md`. Deliver the accepted reference and comparable result, or identify the target build and exercise the requested action there.
 - Verify affected behavior while editing, then the integrated journey. Repeat broad checks only for a new change, failure or unresolved risk. Keep compact evidence outside application history unless it is a required fixture.
 - Report only meaningful state changes. Distinguish implemented, verified, pushed and deployed; include a visible result when relevant, the exact revision and remaining gaps. Deduplicate background notices and reuse event-driven waits.

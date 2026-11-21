@@ -37,6 +37,7 @@ Group by file, show line, author and the comment, then the needs-human list and 
 Write the findings to `$(mktemp -d)/fixes.md` so you are not re-reading the API payload, then work file by file, **highest line number first**, so earlier edits do not shift later anchors.
 
 Per finding:
+If the thread says it is already fixed or the repro is disputed, run the paired-revision procedure in `review/diagnosis.md` before editing. Report an existing verified fix by SHA instead of writing a duplicate.
 1. Fix only what the comment asks for. No adjacent refactoring, no drive-by improvements, no expanding on the idea.
 2. The finding and the fix suggested with it are two claims. A reviewer sees the diff, not the runtime, so correct diagnosis with a wrong prescription is the common case. Check the prescription against the tree before applying it; if the finding holds but their fix does not, fix it correctly and say so in the reply (verification.md V5).
 3. A factual claim you adopt from a reviewer becomes yours the moment you write it into code, a comment or a response. It needs the same evidence as one you authored (V10).

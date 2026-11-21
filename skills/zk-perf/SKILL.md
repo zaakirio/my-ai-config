@@ -12,6 +12,7 @@ A requested rough estimate may use one run if clearly labelled; it cannot select
 Try removing unused work, avoiding repeated work and deferring noncritical work before adding concurrency.
 For sustained optimization, freeze the measurement command and regression gate, then change one hypothesis at a time.
 Keep only improvements beyond noise that preserve behavior; record rejected attempts too.
+Check a material end-to-end speedup against the baseline share of work changed: eliminating a step that took 10% can save at most 10% of total time unless another measured cost changed too.
 Do not treat faster failures, skipped work or lowered correctness requirements as wins.
 Report the measured result, limiter, command and raw results; use inconclusive when the comparison is not valid.
 

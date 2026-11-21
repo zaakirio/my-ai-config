@@ -25,6 +25,12 @@ The final explanation must account for both the failure and the success of the p
 
 ## Reviewing a fix
 
+For a disputed or already-fixed report, identify the commit or PR that claims the fix before writing a second patch.
+Record the actual failing revision and candidate SHA, route or device, fixture, action, and discriminating observation.
+Run the same path on both revisions with the same inputs; reset and repeat when intermittent.
+Confirm only if the baseline shows the reported symptom and the candidate produces the expected end state.
+A wrong surface, unavailable build, or baseline that does not reproduce is unverified; a candidate that still reproduces is not fixed.
+
 Verify the claimed cause explains the end-user reproduction and the proven path without leaning on an untested masking condition. A fix resting on one is a fix that will come back under a different condition.
 Ask for the reproduction, the trigger/mask/symptom separation, the divergence, the counterfactual, and the disconfirming check. If a load-bearing one is missing, say which, rather than treating confidence or implementation detail as proof.
 The reproduction should have become the regression test. A fix with no test that fails without it has not been shown to fix anything (verification.md V8).
