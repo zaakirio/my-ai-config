@@ -5,12 +5,21 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "https://github.com/cursor/plugins.git"
+
+
+def fetch(api_path, url):
+    # gh reaches the API where a proxy blocks git or raw.githubusercontent.com; the HTTPS path covers machines without gh.
+    if shutil.which("gh"):
+        return subprocess.run(["gh", "api", api_path, "-H", "Accept: application/vnd.github.raw"], capture_output=True, check=True, timeout=60).stdout
+    with urlopen(Request(url, headers={"User-Agent": "my-ai-config-upstream-check"}), timeout=30) as response:
+        return response.read()
 
 
 def main():
@@ -22,8 +31,10 @@ def main():
         raise ValueError("Expected Lauren's cursor/plugins upstream and a full pinned SHA")
     ref = manifest["revision"]
     if not args.offline:
-        result = subprocess.run(["git", "ls-remote", REPO, "refs/heads/main"], text=True, capture_output=True, check=True, timeout=30)
-        ref = result.stdout.split()[0]
+        if shutil.which("gh"):
+            ref = subprocess.run(["gh", "api", "repos/cursor/plugins/commits/main", "--jq", ".sha"], text=True, capture_output=True, check=True, timeout=30).stdout.strip()
+        else:
+            ref = subprocess.run(["git", "ls-remote", REPO, "refs/heads/main"], text=True, capture_output=True, check=True, timeout=30).stdout.split()[0]
         if not re.fullmatch(r"[0-9a-f]{40}", ref):
             raise ValueError("Upstream did not return a full SHA")
     rows = []
@@ -36,9 +47,8 @@ def main():
             raise ValueError(f"Retained source changed: {path}")
         digest = item["sha256"]
         if not args.offline:
-            url = f"https://raw.githubusercontent.com/cursor/plugins/{ref}/{path}"
-            with urlopen(Request(url, headers={"User-Agent": "my-ai-config-upstream-check"}), timeout=30) as response:
-                digest = hashlib.sha256(response.read()).hexdigest()
+            body = fetch(f"repos/cursor/plugins/contents/{path}?ref={ref}", f"https://raw.githubusercontent.com/cursor/plugins/{ref}/{path}")
+            digest = hashlib.sha256(body).hexdigest()
         rows.append({"path": path, "changed": digest != item["sha256"], "url": f"https://github.com/cursor/plugins/blob/{ref}/{path}"})
     changed = any(row["changed"] for row in rows)
     print(json.dumps({"status": "review-needed" if changed else "unchanged", "pinned": manifest["revision"], "checked": ref, "offline": args.offline, "files": rows}, indent=2))
