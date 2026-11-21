@@ -80,6 +80,39 @@ class WorktreeAuditTest(unittest.TestCase):
         self.assertTrue(self.trees['stale'].exists(), 'a broken worktree directory is reported, not deleted')
         self.assertNotIn(str(self.trees['stale']), git(self.repo, 'worktree', 'list'))
 
+    def test_unreadable_status_is_not_clean(self):
+        tree = self.trees['merged']
+        index = Path(git(tree, 'rev-parse', '--absolute-git-dir')) / 'index'
+        index.write_bytes(b'bad index')
+        row = next(r for r in self.audit()['worktrees'] if r['worktree'] == str(tree))
+        self.assertEqual(row['bucket'], 'review')
+        self.assertIsNone(row['tracked'])
+        self.assertIsNone(row['untracked'])
+        self.assertNotIn(str(tree), self.audit('--prune')['removed'])
+
+    def test_primary_and_locked_are_reported_but_never_pruned(self):
+        tree = self.trees['merged']
+        git(self.repo, 'worktree', 'lock', '--reason', 'held for review', str(tree))
+        result = self.audit('--include-primary', '--prune')
+        rows = {r['worktree']: r for r in result['worktrees']}
+        self.assertEqual(rows[str(self.repo)]['bucket'], 'primary')
+        self.assertGreater(rows[str(self.repo)]['sizeKb'], 0)
+        self.assertEqual(rows[str(tree)]['bucket'], 'hold-locked')
+        self.assertEqual(rows[str(tree)]['lockReason'], 'held for review')
+        self.assertEqual(result['removed'], [])
+
+    @unittest.skipUnless(Path('/proc/self/cwd').exists(), 'Linux process working directories')
+    def test_live_process_overrides_old_reflog(self):
+        tree = self.trees['merged']
+        with subprocess.Popen(['cat'], cwd=tree, stdin=subprocess.PIPE) as holder:
+            try:
+                row = next(r for r in self.audit()['worktrees'] if r['worktree'] == str(tree))
+                self.assertEqual(row['bucket'], 'active')
+                self.assertIn(holder.pid, [p['pid'] for p in row['processes']])
+                self.assertNotIn(str(tree), self.audit('--prune')['removed'])
+            finally:
+                holder.communicate()
+
 
 if __name__ == '__main__':
     unittest.main()
