@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/cursor/plugins.git",
-  "revision": "e5a8186d7b43be8d6ac4452440fbead5f1a51c70",
+  "revision": "d42aff08aa58965d2735c4ead61a9af82b89d0d0",
   "author": "Lauren Tan (poteto)",
   "files": [
     {
@@ -8,36 +8,96 @@
       "sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e"
     },
     {
-      "path": "pstack/skills/correct/SKILL.md",
-      "sha256": "bf482bacc972b3f124a4af8bf9364b4b3e280cb5845e44c326ea4f4565e5c904"
+      "path": "pstack/skills/benchmark-checklist/SKILL.md",
+      "sha256": "5efd79495e3eebf3b53814861330fe812458212958f8f009492e866c329161f6"
     },
     {
       "path": "pstack/skills/blast-radius/SKILL.md",
-      "sha256": "5f02db9101ccf26c20254718f0fcd5c2c7ac5d4292b0e0923d0944ac47237aff"
+      "sha256": "4248d03e22365207d2e5f90c9542720f80a88a6b42fd542ef88dde3cf9f9223f"
     },
     {
-      "path": "pstack/skills/benchmark-checklist/SKILL.md",
-      "sha256": "6a767e788a60428fa14e645ee10fe2e49896e514ff654f668b1d824deb9038e8"
+      "path": "pstack/skills/correct/SKILL.md",
+      "sha256": "e347045d00c967a0b831ef883cc6ac79d21329aa10b5968637df95de7febf0ba"
     },
     {
       "path": "pstack/skills/create-verification-skill/SKILL.md",
-      "sha256": "644f2551403c1bca01a2855b34611b6e7be0ce0dc5b204514c376c0f6a6e6ac4"
+      "sha256": "d353973547bf8ad8977eca645f4cd4feaed0d32f4b43d1448f906b0a76c4d694"
+    },
+    {
+      "path": "pstack/skills/interrogate/SKILL.md",
+      "sha256": "3f3c2e9b8cf6b180dba9f32a4aff85e5691b09805232468e37a0ba45437a9984"
     },
     {
       "path": "pstack/skills/maintain-verification-skill/SKILL.md",
       "sha256": "515c0eaa054b3f6be1b1fb06f2c2f173c80fddb58bbcac57576f89c479bc68e8"
     },
     {
-      "path": "pstack/skills/principle-build-the-lever/SKILL.md",
-      "sha256": "458b269eab8e95a1573276955312f7d2a13ae8599879a9efc748248f6bc34b56"
+      "path": "pstack/skills/poteto-mode/playbooks/autonomous-run.md",
+      "sha256": "613c7b3079779ecfa27e1fb41a082711b5a1207e720b87f75c3aaa9b25aac480"
     },
     {
-      "path": "pstack/skills/show-me-your-work/SKILL.md",
-      "sha256": "bcff5f7f9fd23f92c12b251f9cd6b947e9485e1055cfacb6fdd9cae0789d7550"
+      "path": "pstack/skills/poteto-mode/playbooks/babysit.md",
+      "sha256": "06fed1fa997c8899d7365fb0f21c0177084fcb8d0561841d2eca753660f63a85"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/bug-fix.md",
+      "sha256": "eef68686ea0128d36979c39ce88f5cd5c248eb4e58f1ca3229692b9902961170"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/eval.md",
+      "sha256": "369bfda8bf305fb57bf4cabada7862c41dc21f1dc0ad7993cfcd29d0a4d99a68"
     },
     {
       "path": "pstack/skills/poteto-mode/playbooks/hillclimb.md",
-      "sha256": "244f289898fe67a458065e90fe8217c916c5acf61cdee8975ade3f9831a12e91"
+      "sha256": "a1d71e026d648991646533539939641f33508d5a02340f5041482ddd58116216"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/pause-safely.md",
+      "sha256": "77968cfe5f4a71a8cd33e0ae8ffcdbd88dd693a212c240457773e6c40c96c21d"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/session-pickup.md",
+      "sha256": "15a6b61eeb89e2dd66ab8254f7c6807694a06eb103342983a7620f10c942ecf9"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/shipping.md",
+      "sha256": "486a6211859eeacfc9a85c7a9d2632b7dddecad189a6b2551212ef274ef1d85c"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/worktree-cleanup.md",
+      "sha256": "2d4d3dcc9e4ddff4770c5f2a254c7915e6bbed968861cfa0c3c45bd04f99b3a5"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/references/bugbot-triage.md",
+      "sha256": "b2d146c770d8d3593e1ef3d77b668039b8e1f78093ea1a86f1d45d7f99614309"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/scripts/worktree-audit.sh",
+      "sha256": "06be04b38346ded24ce761d373726f98cd9b9737f20ec98214e88b5f08f521b8"
+    },
+    {
+      "path": "pstack/skills/principle-attack-the-premise/SKILL.md",
+      "sha256": "831e916c540f4b6b720b7472aeea6e6ef93996655e36cc2517221f6f2081b480"
+    },
+    {
+      "path": "pstack/skills/principle-build-the-lever/SKILL.md",
+      "sha256": "753d81cf9ca2a4e9d1f057429f0c63c9c622e6022dd877ec97ec15f442076aac"
+    },
+    {
+      "path": "pstack/skills/principle-fix-root-causes/SKILL.md",
+      "sha256": "79afd7e67d8951203231f6f1ccfc7b4a1f30d8d6cdb68e92755c80012414dbeb"
+    },
+    {
+      "path": "pstack/skills/reflect/SKILL.md",
+      "sha256": "6f6952f91514dc86257830da93a446c732a1af906f6acd5e5783dc587a29031e"
+    },
+    {
+      "path": "pstack/skills/show-me-your-work/SKILL.md",
+      "sha256": "ec29326ac20515f2941198205bec615320a55b21659692e19650530dbf217bde"
+    },
+    {
+      "path": "pstack/skills/unslop/SKILL.md",
+      "sha256": "2b823fd069e031c1420180be8e0d4f5e2fd25bf2c428049e5c835c59a489b5e0"
     }
   ]
 }
