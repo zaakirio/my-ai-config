@@ -85,6 +85,6 @@ python3 scripts/workflow/prose-lint.py pr-body.md
 ```
 
 `worktree-audit.py` sorts each repository's worktrees by size into `hold-claimed`, `hold-wip`, `hold-open-pr`, `active`, `safe` and `review`.
-`--prune` removes only `safe` worktrees: clean, merged or with a closed PR, idle past `--recent-hours` (default 72), and with no `pr-owner` claim.
+`--prune` removes only `safe` worktrees: clean, merged or with a closed PR, no commit, checkout or reset within `--recent-hours` (default 72), and with no `pr-owner` claim.
 Branches survive, so `git worktree add <path> <branch>` restores a pruned worktree.
 `prose-lint.py` flags dashes, blockquotes, AI attribution, AI vocabulary and chatbot phrases outside code fences, and exits 1 with the fix for each hit.

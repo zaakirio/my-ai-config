@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -37,14 +38,17 @@ class WorktreeAuditTest(unittest.TestCase):
         (self.repo / '.git/info/exclude').write_text('node_modules/\n')
         (self.trees['merged'] / 'node_modules').mkdir()
         (self.trees['merged'] / 'node_modules/big.js').write_text('x')
-        old = time.time() - 10 * 86400
+        old = int(time.time() - 10 * 86400)
         for name, path in self.trees.items():
             if name == 'recent':
                 continue
-            gitdir = Path(git(path, 'rev-parse', '--path-format=absolute', '--git-dir'))
-            for entry in ['HEAD', 'index', 'logs/HEAD']:
-                if (gitdir / entry).exists():
-                    os.utime(gitdir / entry, (old, old))
+            log = Path(git(path, 'rev-parse', '--path-format=absolute', '--git-dir')) / 'logs/HEAD'
+            # Old reflog entries in a freshly touched file: activity must come from the entry, not the mtime.
+            log.write_text(re.sub(r' \d{9,} ([+-]\d{4})\t', f' {old} \\1\t', log.read_text()))
+        stale = self.root / 'stale'
+        git(self.repo, 'worktree', 'add', '-q', '-b', 'stale', str(stale), 'main')
+        (stale / '.git').unlink()
+        self.trees['stale'] = stale
         fake = self.root / 'pr-owner'
         fake.write_text('#!/bin/sh\ncase "$3" in *claimed) echo \'{"owner": "thread-1"}\' ;; *) echo null ;; esac\n')
         fake.chmod(0o755)
@@ -63,7 +67,7 @@ class WorktreeAuditTest(unittest.TestCase):
         buckets = {Path(r['worktree']).name: r['bucket'] for r in self.audit()['worktrees']}
         self.assertEqual(buckets, {
             'merged': 'safe', 'wip': 'hold-wip', 'scratch': 'review', 'unmerged': 'review',
-            'recent': 'active', 'claimed': 'hold-claimed',
+            'recent': 'active', 'claimed': 'hold-claimed', 'stale': 'broken',
         })
 
     def test_prune_removes_only_safe_and_keeps_branches(self):
@@ -73,6 +77,8 @@ class WorktreeAuditTest(unittest.TestCase):
         for name in ['wip', 'scratch', 'unmerged', 'recent', 'claimed']:
             self.assertTrue(self.trees[name].exists(), name)
         self.assertIn('merged', git(self.repo, 'branch', '--list', 'merged'))
+        self.assertTrue(self.trees['stale'].exists(), 'a broken worktree directory is reported, not deleted')
+        self.assertNotIn(str(self.trees['stale']), git(self.repo, 'worktree', 'list'))
 
 
 if __name__ == '__main__':
