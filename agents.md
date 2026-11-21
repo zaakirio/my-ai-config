@@ -48,3 +48,12 @@
 - A merge is done only when read back: `gh pr view <n> --json state,mergedAt,baseRefName` shows MERGED into the intended base; an armed auto-merge or a queued merge is not merged.
 - Pause, wrap-up or handover: use `zk-handover`. Worktree cleanup: `~/.config/my-ai-config/scripts/workflow/worktree-audit.py`, prune only its `safe` bucket.
 - Before publishing a PR body, commit message, review reply, Slack post or doc, run `~/.config/my-ai-config/scripts/workflow/prose-lint.py` on it and fix every hit.
+
+## Workspace and checkpoints
+- Before a large install, build, browser batch or new worktree, check free space and estimate its new writes with `python3 ~/.config/my-ai-config/scripts/workspace.py check --required-gib N`.
+- On Linux, run heavy local install/build jobs through `workspace.py run --required-gib N -- COMMAND` to serialize cooperating jobs and preserve 10 GiB free. Use `AGENT_ARTIFACT_DIR` for temporary captures. Never clear package caches while an installer is active. Check unmanaged active jobs too; the lock cannot cover other tools.
+- Managed completed artifacts expire after seven days. Use `run --pin` for acceptance proof, or copy the final compact proof into the project. Never treat chat attachments, source artwork, databases or worktrees as disposable captures.
+- Start from the intended integration branch. Record the baseline, dirty files and overlapping work before editing. Inspect existing deployment configuration and running services before proposing new hosting or credentials.
+- Define one observable delivery checkpoint before implementation. For visual work, get acceptance of a representative screen before extending its shared pattern. An accepted screen stays closed unless a defect or new request reopens it.
+- Verify affected behavior while editing, then the integrated journey. Repeat broad checks only for a new change, failure or unresolved risk. Keep compact evidence outside application history unless it is a required fixture.
+- Report only meaningful state changes. Distinguish implemented, verified, pushed and deployed; include a visible result when relevant, the exact revision and remaining gaps. Deduplicate background notices and reuse event-driven waits.

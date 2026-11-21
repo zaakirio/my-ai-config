@@ -30,6 +30,45 @@ The installer links that legacy path too, preserving existing Claude seat links.
 The optional macOS Herdr sidebar remains in `herdr/`; it is not required for any portable skill.
 For a Herdr team, follow [its runtime adapter](adapters/herdr.md).
 
+## Local resource guard
+
+Linux heavy jobs share a nonblocking lock and a default 10 GiB disk reserve.
+Estimate new writes before running; use a larger estimate for fresh dependencies, build layers and browser downloads.
+The lock covers cooperating commands only; inspect existing unmanaged processes before cleanup.
+
+```sh
+python3 scripts/workspace.py check --required-gib 6
+python3 scripts/workspace.py run --required-gib 6 -- npm ci
+python3 scripts/workspace.py run --required-gib 1 --pin -- python3 verify.py
+python3 scripts/workspace.py prune
+```
+
+Commands receive `AGENT_ARTIFACT_DIR` for temporary evidence.
+Only completed runs in `~/.cache/agent-work/runs` older than seven days expire.
+`.keep` pins a run; remove it only after retaining the compact acceptance proof.
+Completion records remain in `~/.cache/agent-work/records`.
+Aborted runs without a completion record require manual review; no arbitrary temporary folder, worktree, package cache, chat record or database is pruned.
+Command arguments and output are not stored by the guard.
+
+If preflight refuses a job, inspect live registered worktree sizes before choosing what to do:
+
+```sh
+python3 scripts/workflow/worktree-audit.py --offline --include-primary --base origin/dev ~/dev/LingoBite
+```
+
+Use the actual integration ref for the project.
+Sizes include ignored files and, in the primary checkout, the Git database; they are not reclaimable-byte estimates.
+
+Enable daily retention on this Linux host:
+
+```sh
+mkdir -p ~/.config/systemd/user
+ln -s ~/.config/my-ai-config/systemd/agent-artifacts.service ~/.config/systemd/user/agent-artifacts.service
+ln -s ~/.config/my-ai-config/systemd/agent-artifacts.timer ~/.config/systemd/user/agent-artifacts.timer
+systemctl --user daemon-reload
+systemctl --user enable --now agent-artifacts.timer
+```
+
 ## Skills
 
 | Skill | Use |
@@ -84,7 +123,8 @@ python3 scripts/workflow/worktree-audit.py --scan ~/.t3/worktrees --prune
 python3 scripts/workflow/prose-lint.py pr-body.md
 ```
 
-`worktree-audit.py` sorts each repository's worktrees by size into `hold-claimed`, `hold-wip`, `hold-open-pr`, `active`, `safe` and `review`.
+`worktree-audit.py` sorts linked worktrees by size and reports the primary checkout separately with `--include-primary`.
+Git-locked trees stay held, observed Linux process working directories count as activity, and an unreadable Git status cannot qualify as clean.
 `--prune` removes only `safe` worktrees: clean, merged or with a closed PR, no commit, checkout or reset within `--recent-hours` (default 72), and with no `pr-owner` claim.
 Branches survive, so `git worktree add <path> <branch>` restores a pruned worktree.
 `prose-lint.py` flags dashes, blockquotes, AI attribution, AI vocabulary and chatbot phrases outside code fences, and exits 1 with the fix for each hit.
