@@ -32,3 +32,19 @@
 - Report working behavior, evidence and remaining acceptance gaps; a green build alone does not prove delivery.
 - Follow the project's integration and publication rules, and reuse authorization already given for this task.
 - Fix unrelated defects in a separate coherent change without mixing another task's edits into the current one.
+
+## Debugging
+- Reproduce on the real surface yourself before asking me; ask only with the specific reason the surface cannot reach it.
+- List the candidate causes, then rule them out with runtime evidence; instrument and read real state instead of guessing.
+- When evidence refutes a hypothesis, revert the code it motivated; "might help" guards, retries and clamps do not ship.
+- A guard is a fix only when the state it handles is legitimate; otherwise fix what produced the state.
+- After two failed fixes on one premise, write the premise down and test it directly before a third fix.
+- Fix every sibling of the fault, not only the reported instance.
+- Report the failing-then-passing repro output verbatim; with a cheap test path, commit the failing test before the fix.
+
+## Long runs
+- Before long or unattended work, state done as a checkable predicate (repro passes, checks green at a SHA, PR merged) and drive to it; a plateau is not a stop.
+- Do not stop to ask about reversible work; stop only for irreversible actions, product calls no experiment can settle, or a real dead end.
+- A merge is done only when read back: `gh pr view <n> --json state,mergedAt,baseRefName` shows MERGED into the intended base; an armed auto-merge or a queued merge is not merged.
+- Pause, wrap-up or handover: use `zk-handover`. Worktree cleanup: `~/.config/my-ai-config/scripts/workflow/worktree-audit.py`, prune only its `safe` bucket.
+- Before publishing a PR body, commit message, review reply, Slack post or doc, run `~/.config/my-ai-config/scripts/workflow/prose-lint.py` on it and fix every hit.

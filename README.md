@@ -42,6 +42,9 @@ For a Herdr team, follow [its runtime adapter](adapters/herdr.md).
 | `zk-perf` | Measure a real bottleneck and retain only verified wins |
 | `zk-create-verifier` | Build a project-owned runtime verification skill from existing tools |
 | `zk-maintain-verifier` | Check verifier instructions against source and live behavior |
+| `zk-interrogate` | Adversarial review of your own change, keeping only run-proven findings |
+| `zk-handover` | Pause or wrap up so another agent can resume cold, and resume from such a note |
+| `zk-reflect` | Turn a session's lessons into approved, tested skill edits |
 
 Use the skill's name in a request; exact menu syntax differs by client and is documented in its adapter.
 Reviewer prompts live in `agents/`; Claude can register them natively, while other clients read the same prompt bodies through their available workers.
@@ -70,5 +73,18 @@ python3 scripts/check-upstream.py
 python3 -m unittest discover -s tests -v
 ```
 
-The network check reports changes only; it never installs or executes remote instructions.
+The network check reports changes only; it never installs or executes remote instructions. It uses `gh api` when `gh` is installed, because some proxies block git and raw file downloads.
 Review upstream changes before refreshing the pin.
+
+## Workflow scripts
+
+```sh
+python3 scripts/workflow/worktree-audit.py --scan ~/.t3/worktrees <repo> ...
+python3 scripts/workflow/worktree-audit.py --scan ~/.t3/worktrees --prune
+python3 scripts/workflow/prose-lint.py pr-body.md
+```
+
+`worktree-audit.py` sorts each repository's worktrees by size into `hold-claimed`, `hold-wip`, `hold-open-pr`, `active`, `safe` and `review`.
+`--prune` removes only `safe` worktrees: clean, merged or with a closed PR, idle past `--recent-hours` (default 72), and with no `pr-owner` claim.
+Branches survive, so `git worktree add <path> <branch>` restores a pruned worktree.
+`prose-lint.py` flags dashes, blockquotes, AI attribution, AI vocabulary and chatbot phrases outside code fences, and exits 1 with the fix for each hit.

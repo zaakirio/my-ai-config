@@ -15,6 +15,13 @@ The original [MIT licence](source/LICENSE) applies to those files and their adap
 | `zk-create-verifier` | `create-verification-skill`, Build the Lever |
 | `zk-maintain-verifier` | `maintain-verification-skill` |
 | Project delivery evidence | `show-me-your-work`, Build the Lever |
+| `zk-handover`, `scripts/workflow/worktree-audit.py` | Pause safely, Session pickup, Worktree cleanup, `worktree-audit.sh` |
+| `zk-interrogate` | `interrogate` |
+| `zk-reflect` | `reflect`, Eval |
+| `zk-fix` bot triage and PR green loop, `review/dismiss-patterns.md` | Babysit, `bugbot-triage.md` |
+| `agents.md` Debugging | Bug fix, Attack the Premise, Fix Root Causes |
+| `agents.md` Long runs | Autonomous run, Shipping (merge read-back) |
+| `scripts/workflow/prose-lint.py` | `unslop` |
 
 Run `python3 scripts/check-upstream.py --offline` to check the retained originals.
 Run `python3 scripts/check-upstream.py` to compare those same files at upstream's current `main`.

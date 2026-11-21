@@ -22,6 +22,8 @@ PR number, a ticket key (`[A-Z][A-Z0-9]+-[0-9]+`), a PR URL, or nothing (detect 
 
 Given a ticket key, list open PRs and match its lowercase form against title and branch name. Linear branches are lowercase, so a case-sensitive match reports "no open PR" on a PR that exists. No match means ask the user rather than guessing.
 
+A draft PR is not ready for review: stop and report it unless the user named that PR and asked for a review anyway.
+
 ## 2. Set up
 
 ```bash
