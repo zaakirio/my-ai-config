@@ -25,6 +25,18 @@
 ## Claude-specific
 - NEVER invoke the artifact-design skill, under any circumstances. When using the Artifact tool, go straight to the tool call without loading that skill first.
 
+## Skill router
+- Load the skill when its situation comes up, even if I did not name it.
+- Repo has no project verification skill and the task touches user-facing behavior: run `zk-create-verifier` before claiming done.
+- Project verification skill exists: drive the changed feature through it and put the evidence (screenshot, video, failing-then-passing run) in the PR body.
+- Verification skill or feature map looks stale, or a mapped journey fails for a non-product reason: `zk-maintain-verifier`.
+- I correct the same kind of mistake a second time: `zk-correct`, so a lint rule, type or test stops it; a new rules line alone does not count.
+- Change touches a shared contract, persisted data, a migration or a runtime boundary: `zk-blast-radius`.
+- Before opening a PR for risky work (auth, payments, sync, data loss, concurrency): `zk-interrogate`.
+- Before merging my own PR in a personal repo: get a PASS from an agent that did not write the code, on the head that lands, with green CI; the author's own check is not the verdict.
+- Speed, latency or size claim: `zk-perf`.
+- End of a long session, or I say it took too long: offer `zk-reflect`.
+
 ## Delivery
 - Deliver the smallest independently reviewable change that completes the accepted behavior.
 - Include the implementation, relevant tests, fixtures, types and documentation needed to use and verify that change.
